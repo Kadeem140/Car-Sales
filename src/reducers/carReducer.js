@@ -1,4 +1,7 @@
-export const initialState = {  
+import {ADD_FEATURE} from '../actions/index'
+import {REMOVE_FEATURE} from '../actions/index'
+
+ export const initialState = {  
     additionalPrice: 0,
     car: {
       price: 26395,
@@ -17,14 +20,29 @@ export const initialState = {
 
 export const carReducer = (state = initialState, action) => {
     switch(action.type){                     //we are switching data based on the action.type
-        case "ADD_FEATURES":                 //In the case where the type has a value of "ADD_FEATURES"
+        case ADD_FEATURE:                 //In the case where the type has a value of "ADD_FEATURES"
             return {                         //Run this code
-                ...state,                    //Make a mutable copy of state
-                    car: { ...state.car,                  
-                        features:[...state.car.features,
-                            state.additionalFeatures[action.payload - 1]     //With this object added to it                   
-                        ]                
-                    },       
-            }
+              ...state,                    //Make a mutable copy of state                 
+                additionalPrice: (state.additionalPrice += action.payload.price),
+                car:{
+                    ...state.car,
+                    features: [...state.car.features, action.payload]
+                },
+                additionalFeatures: state.additionalFeatures.filter((feature) => feature.id !== action.payload.id)    //With this object added to it                               
+             } 
+        case REMOVE_FEATURE:
+            return{
+                ...state,
+                additionalPrice: (state.additionalPrice -= action.payload.price),
+                car: {
+                   ...state.car,
+                   features: state.car.features.filter(
+                       (feature) => feature.id !==action.payload.id
+                   )
+                },
+                additionalFeatures : [...state.additionalFeatures, action.payload]
+            }  
+            default: 
+                return state
     }
 }
